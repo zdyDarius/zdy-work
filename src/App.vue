@@ -3,7 +3,7 @@
     <div class="todo-wrap">
       <TodoHeader :addtodo="addtodo"/>
       <TodoMain :todos="todos" :deletetodo="deletetodo" />
-      <TodoFooter/>
+      <TodoFooter :todos="todos" :selectAllTodos="selectAllTodos" :clearall="clearall"/>
     </div>
   </div>
 </template>
@@ -12,12 +12,12 @@
   import Header from './components/Header.vue'
   import Main from './components/Main.vue'
   import Footer from './components/Footer.vue'
-
-
+  import storageUtils from './utils/storageUtils'
   export default {
+
     data(){
       return {
-        todos:[{name:'吃饭',complete:false},{name:'睡觉',complete:true},{name:'打豆豆',complete:false}]
+        todos:storageUtils.readTodos()
       }
     },
 
@@ -27,6 +27,19 @@
       },
       deletetodo(index){
         this.todos.splice(index,1)
+      },
+      selectAllTodos(value){
+        this.todos.forEach((todo,index)=>todo.complete=value)
+      },
+      clearall(){
+        this.todos=this.todos.filter((todo)=>!todo.complete)
+      }
+
+    },
+    watch:{
+      todos:{
+        deep:true,
+        handler:storageUtils.saveTodos
       }
     },
     components: {
